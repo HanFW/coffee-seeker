@@ -16,7 +16,7 @@ var mapPath = d3.geoPath()
 
 // define color scheme
 var mapColor = d3.scaleQuantize()
-                 .range(["#f3f4f6", "#cac8c5", "#ad9986", "#b7784e" ,"#73472e"]);
+                 .range(["#BA8D74", "#92664E", "#73472E", "#5A3018" ,"#3B1906"]);
 
 var zoom = d3.zoom()
              .scaleExtent([1, 8])
