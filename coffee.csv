@@ -1,4 +1,4 @@
-﻿Species,Owner,Country.of.Origin,Company,Altitude,Region,Producer,In.Country.Partner,Aroma,Flavor,Aftertaste,Acidity,Body,Balance,unit_of_measurement,altitude_low_meters,altitude_high_meters,altitude_mean_meters
+﻿Species,Owner,Country,Company,Altitude,Region,Producer,Partner,Aroma,Flavor,Aftertaste,Acidity,Body,Balance,unit_of_measurement,altitude_low_meters,altitude_high_meters,altitude_mean_meters
 Arabica,"exportadora atlantic, s.a.",Nicaragua,exportadora atlantic s.a,1100,jalapa,TeÃ³filo NarvÃ¡ez,Instituto HondureÃ±o del CafÃ©,7.25,6.58,6.33,6.25,6.42,6.08,m,1100,1100,1100
 Arabica,cadexsa,Honduras,cadexsa,1450 msnm,marcala,Omar Acosta,Instituto HondureÃ±o del CafÃ©,6.67,6.5,6.17,6.67,6.83,6.17,m,1450,1450,1450
 Arabica,cadexsa,Honduras,cadexsa,1450 msnm,marcala,Omar Acosta,Instituto HondureÃ±o del CafÃ©,7,6.17,6.17,6.67,6.5,6.17,m,1450,1450,1450
