@@ -1,6 +1,8 @@
 // define width and height
 var mapW = window.innerWidth * 0.85;
 var mapH = 500;
+var scale;
+var domainBycountries = [];
 
 // define map projection
 var mapProjection = d3.geoMercator()
@@ -30,21 +32,19 @@ var g_map = mapSvg.append("g");
 
 mapSvg.call(zoom);
 
+// define legend
+mapSvg.append("g")
+      .attr("class", "legendQuant")
+      .attr("transform", "translate(20,20)");
+
 // load data
 d3.csv("coffee.csv", function(data) {
     dataset = data;
     // console.log(dataset);
 
-    // define input domain for color scale
-    mapColor.domain([
-        d3.min(dataset, function(d) { return d.Balance; }),
-        d3.max(dataset, function(d) { return d.Balance; })
-    ]);
-
     d3.json("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson", function(mapjson) {
-        // loop through all the countries in the geojson file
-        // console.log(mapjson);
 
+        // loop through all the countries in the geojson file
         var dataByCountry;
         for(i = 0; i < mapjson.features.length; i++ ) {
             // console.log(mapjson.features[i].properties.ADMIN);
@@ -58,12 +58,17 @@ d3.csv("coffee.csv", function(data) {
                 mapjson.features[i].properties.value = 0;
             } else {
                 mapjson.features[i].properties.value = d3.max(dataByCountry, function(d) { return d.Balance; });
+                domainBycountries.push(+mapjson.features[i].properties.value);
             }
 
             // console.log(mapjson.features[i].properties.value);
         }
 
-        // console.log(mapjson.features);
+        // define scale
+        scale = mapColor.domain([
+           d3.min(domainBycountries),
+           d3.max(domainBycountries)
+        ]);
 
         g_map.selectAll("path")
              .data(mapjson.features)
@@ -89,49 +94,25 @@ d3.csv("coffee.csv", function(data) {
              .enter()
              .append("path")
              .attr("d", mapPath);
+
+        var legend = d3.legendColor()
+                       .shapeHeight(10)
+                       .shapeWidth(80)
+                       .orient("horizontal")
+                       .scale(scale);
+
+        mapSvg.select(".legendQuant")
+              .call(legend);
+
     });
+
 });
+
 
 function zoomed(){
     g_map.selectAll('path')
          .attr("transform", d3.event.transform);
 }
-
-
-// define legend
-// var legend = mapSvg.selectAll('g.legendEntry')
-//     .data(mapColor.range())
-//     .enter()
-//     .append('g').attr('class', 'legendEntry');
-//
-// legend
-//     .append('rect')
-//     .attr("x", mapW - 780)
-//     .attr("y", function(d, i) {
-//        return i * 20;
-//     })
-//    .attr("width", 10)
-//    .attr("height", 10)
-//    .style("stroke", "black")
-//    .style("stroke-width", 1)
-//    .style("fill", function(d){return d;});
-//        //the data objects are the fill colors
-//
-// legend
-//     .append('text')
-//     .attr("x", mapW - 765) //leave 5 pixel space after the <rect>
-//     .attr("y", function(d, i) {
-//        return i * 20;
-//     })
-//     .attr("dy", "0.8em") //place text one line *below* the x,y point
-//     .text(function(d,i) {
-//         console.log(mapColor.invertExtent(d));
-//         var extent = mapColor.invertExtent(d);
-//         //extent will be a two-element array, format it however you want:
-//         var format = d3.format("0.2f");
-//         return format(+extent[0]) + " - " + format(+extent[1]);
-//     });
-
 
 
 
