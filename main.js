@@ -33,12 +33,16 @@ d3.csv("coffee.csv", function(data) {
         d3.max(dataset, function(d) { return d.Balance; })
     ]);
 
-    d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function(mapjson) {
+    d3.json("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson", function(mapjson) {
         // loop through all the countries in the geojson file
+        // console.log(mapjson);
+
         var dataByCountry;
         for(i = 0; i < mapjson.features.length; i++ ) {
+            // console.log(mapjson.features[i].properties.ADMIN);
+
             dataByCountry = dataset.filter(function(d) {
-                return mapjson.features[i].properties.name == d.Country;
+                return mapjson.features[i].properties.ADMIN == d.Country;
             });
 
             if(dataByCountry.length == 0) {
@@ -51,7 +55,7 @@ d3.csv("coffee.csv", function(data) {
             // console.log(mapjson.features[i].properties.value);
         }
 
-    console.log(mapjson.features);
+    // console.log(mapjson.features);
 
     mapSvg.selectAll("path")
           .data(mapjson.features)
@@ -61,7 +65,6 @@ d3.csv("coffee.csv", function(data) {
           .style("fill", function(d) {
               //Get data value
               var value = d.properties.value;
-              console.log("test");
 
               if (value > 0) {
               	//If value exists…
