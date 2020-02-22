@@ -1,11 +1,11 @@
 // define width and height
-var mapW = 1500;
-var mapH = 600;
+var mapW = window.innerWidth * 0.85;
+var mapH = 500;
 
 // define map projection
 var mapProjection = d3.geoMercator()
                       .translate([mapW/2, mapH/2])
-                      .center([0,20])
+                      .center([50,10])
                       .scale(200);
 
 // define path generator
@@ -69,6 +69,7 @@ d3.csv("coffee.csv", function(data) {
              .data(mapjson.features)
              .enter()
              .append("path")
+             .attr('class', 'mapPath')
              .attr("d", mapPath)
              .style("fill", function(d) {
                 //Get data value
