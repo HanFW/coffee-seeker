@@ -16,7 +16,7 @@ var mapPath = d3.geoPath()
 
 // define color scheme
 var mapColor = d3.scaleQuantize()
-                 .range(["#BA8D74", "#92664E", "#73472E", "#5A3018" ,"#3B1906"]);
+                 .range(["#EC8A45", "#CA763A", "#9F5D2D", "#804E36" ,"#4A2D20"]);
 
 var zoom = d3.zoom()
              .scaleExtent([1, 8])
@@ -89,12 +89,7 @@ d3.csv("coffee.csv", function(data) {
                 }
              });
 
-        g_map.selectAll("path")
-             .data(mapjson.features)
-             .enter()
-             .append("path")
-             .attr("d", mapPath);
-
+        // add legend
         var legend = d3.legendColor()
                        .shapeHeight(10)
                        .shapeWidth(80)
@@ -104,16 +99,48 @@ d3.csv("coffee.csv", function(data) {
         mapSvg.select(".legendQuant")
               .call(legend);
 
+        // tooptip on hover
+        g_map.selectAll("path")
+             .data(mapjson.features)
+             .on("mouseover", function(d) {
+                  d3.select("#tooltip-map")
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px")
+                    .html(d.properties.ADMIN)
+                    .classed("hidden",false);
+
+                  d3.select(this)
+                    .style("fill", "#537534");
+              })
+              .on("mouseout", function(d) {
+                      d3.select("#tooltip-map").classed("hidden", true);
+
+                      d3.select(this)
+                        .style("fill", function(d) {
+                           //Get data value
+                           var value = d.properties.value;
+
+                           if (value > 0) {
+                           	//If value exists…
+                           	return mapColor(value);
+                           } else {
+                           	//If value is undefined…
+                           	return "#ccc";
+                           }
+                        });
+              })
+              .on("click", function(d) {
+                  // to be changed
+              });
+
     });
 
 });
-
 
 function zoomed(){
     g_map.selectAll('path')
          .attr("transform", d3.event.transform);
 }
-
 
 
 
