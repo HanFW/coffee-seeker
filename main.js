@@ -139,13 +139,13 @@ d3.csv("coffeetest.csv", function(data) {
         })
         .on("mouseover", function(d) {
             // get this bar's x/y values, then augment for the tooltip
-            var yPosition=parseFloat(d3.select(this).attr("y")) + yScale.bandwidth() / 2;
+            var yPosition=-parseFloat(d3.select(this).attr("y")) + yScale.bandwidth() / 2;
             var xPosition=parseFloat(d3.select(this).attr("width")) / 2 + w / 4;
 
             //update the tooltip position and value
                 d3.select("#tooltip")
                     .style("left", xPosition + "px")
-                    .style("top", yPosition + "px")
+                    .style("bottom", yPosition + "px")
                     .select("#value")
                     .html(
                         "Country: " + d.Country + "<br/>"
