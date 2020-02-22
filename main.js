@@ -85,9 +85,10 @@ d3.csv("coffee.csv", function(data) {
 
 
 
-var margin = {top: 20, right: 20, bottom: 30, left: 180};
+var margin = {top: 20, right: 80, bottom: 200, left: 180};
 var w = 1200 - margin.left - margin.right;
-var h = 500 - margin.top - margin.bottom;
+var h = 800 - margin.top - margin.bottom;
+
 
 d3.csv("coffeetest.csv", function(data) {
      console.log(data);
@@ -140,7 +141,7 @@ d3.csv("coffeetest.csv", function(data) {
         .on("mouseover", function(d) {
             // get this bar's x/y values, then augment for the tooltip
             var yPosition=-parseFloat(d3.select(this).attr("y")) + yScale.bandwidth() / 2;
-            var xPosition=parseFloat(d3.select(this).attr("width")) / 2 + w / 4;
+            var xPosition=parseFloat(d3.select(this).attr("width")*1.3);
 
             //update the tooltip position and value
                 d3.select("#tooltip")
@@ -152,9 +153,13 @@ d3.csv("coffeetest.csv", function(data) {
                         + "Region: " + d.Region + "<br/>"
                         + "Producer: " + d.Producer + "<br/>"
                         + "Owner: " + d.Owner + "<br/>"
+                        + "mean altitude: " + d.altitude_mean_meters + "<br/>"
                         + "Balance: " + d.Balance + "<br/>" 
                         + "Aroma: " + d.Aroma + "<br/>"
-                        + "mean altitude: " + d.altitude_mean_meters
+                        + "Flavor: " + d.Flavor + "<br/>"
+                        + "Aftertaste: " + d.Aftertaste + "<br/>"
+                        + "Acidity: " + d.Acidity + "<br/>"
+                        + "Body: " + d.Body
                     );
                 // show the tooltip
                 d3.select("#tooltip").classed("hidden",false);                    
@@ -196,10 +201,34 @@ d3.csv("coffeetest.csv", function(data) {
         };
 
     svg.append("g")
+        .attr("class","axis")
         .attr("transform", "translate(0," + h + ")")
         .call(d3.axisBottom(xScale));
 
     svg.append("g")
+        .attr("class","axis")
+        .attr("transform","translate(" + 0 + ",0)")
         .call(d3.axisLeft(yScale));
+
+    svg.append("text")
+        .attr("transform","rotate(-90)")
+        .attr("y", 0 - margin.left + 10)
+        .attr("x", 0 - (h/2))
+        .attr("dy","1em")
+        .style("text-anchor", "middle")
+        .style("font-family","Lucida Calligraphy")
+        .style("font-size","18px")
+        .text("Coffee Owners");
+    
+    svg.append("text")        
+        .attr("y", h + 10)
+        .attr("x", w)
+        .attr("dx","1em")
+        .style("text-anchor", "right")
+        .style("font-family","Lucida Calligraphy")
+        .style("font-size","14px")
+        .text("Balance");
+
+
 });	
    
