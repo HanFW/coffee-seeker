@@ -173,10 +173,12 @@ var h = 800 - margin.top - margin.bottom;
 
 
 d3.csv("coffeetest.csv", function(data) {
-     // console.log(data);
+     console.log(data);
+    
+    
 
 
-    var dataset = data;
+    //var dataset = data;
 
     //introduced an ordinal scale to handle the left/right positioning of bars and labels along the x-axis
     var yScale = d3.scaleBand()//an ordinal scale, left to right, evenly spaced
@@ -198,12 +200,16 @@ d3.csv("coffeetest.csv", function(data) {
     data.forEach(function(d) {
             d.Balance = +d.Balance;
     });
+    data.sort(function(a,b){ 
+        return +a.Balance - +b.Balance
+    })
+        
 
-    xScale.domain([d3.min(dataset, function(d){ return d.Balance;})-0.3,d3.max(dataset, function(d){ return d.Balance;})+0.3])
+    xScale.domain([d3.min(data, function(d){ return d.Balance;})-0.3,d3.max(data, function(d){ return d.Balance;})+0.3])
     yScale.domain(data.map(function(d) { return d.Owner; }))
 
     svg.selectAll(".bar")
-        .data(dataset)
+        .data(data)        
         .enter()
         .append("rect")
         .attr("class","bar")
@@ -250,38 +256,8 @@ d3.csv("coffeetest.csv", function(data) {
                 // hide the tooltip
                 d3.select("#tooltip").classed("hidden", true);
 
-        })
-        .on("click", function(){                                   //click to sort the bars
-            sortBars();
-        })
-        //Define sort order flag
-        var sortOrder = false;
-
-        //Define sort function
-        var sortBars = function() {
-
-            //Flip value of sortOrder
-            sortOrder = !sortOrder;
-
-            svg.selectAll("rect")
-            .sort(function(a, b) {
-                    if (sortOrder) {
-                        return d3.ascending(a, b);
-                    } else {
-                        return d3.descending(a, b);
-                    }
-                })
-            .transition()
-            .delay(function(d) {
-                return d.Balance * 50;
-            })
-            .duration(1000)
-            .attr("y", function(d) {
-                    return yScale(d.Owner);
-            })
-
-        };
-
+        })       
+        
     svg.append("g")
         .attr("class","axis")
         .attr("transform", "translate(0," + h + ")")
