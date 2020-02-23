@@ -455,6 +455,8 @@ function filterMap(d) {
 
     // if no qualified data in the country
     if(qualified_in_the_country.length == 0) {
+        // assign new highest balance to country on the map
+        d.properties.value = 0;
         return "#ccc";
     }
 
@@ -473,6 +475,6 @@ function updateBarChart(d) {
     dataset = filtered.filter(function(d) {
         return d.Country == country;
     });
-    
+
     console.log(dataset);
 }
