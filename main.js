@@ -164,127 +164,122 @@ d3.csv("coffee.csv", function(data) {
                 // to be changed
             });
 
-          var sliderAcidity = d3
-              .sliderBottom()
-              .min(6)
-              .max(9)
-              .width(200)
-              .step(0.1)
-              .ticks(5)
-              .displayValue(false)
-              .default([6,10])
-              .fill('#2196f3')
-              .on('onchange', val => {
-                  var min = val[0]; var max = val[1];
-                  g_map.selectAll("path")
-                      .attr("fill", function(d){
-                          var inst = d.properties.coffeeData;
-                          if(inst != 0 && inst.Acidity <= max && min <= inst.Acidity){
-                              return mapColor(d.properties.value);
-                          }
-                          return "#ccc";
-                      });
-              });
+        var sliderAcidity = d3
+            .sliderBottom()
+            .min(6)
+            .max(9)
+            .width(200)
+            .step(0.1)
+            .ticks(5)
+            .displayValue(false)
+            .default([6,10])
+            .fill('#2196f3')
+            .on('onchange', function(d) {
+                min = d[0]; max = d[1];
 
-          d3.select('#slider-acidity')
-              .append('svg')
-              .attr('width', 500)
-              .attr('height', 100)
-              .append('g')
-              .attr('transform', 'translate(30,30)')
-              .call(sliderAcidity);
+                // change global filter
+                filters.Acidity = [min, max];
 
-          var sliderAroma = d3
-              .sliderBottom()
-              .min(6)
-              .max(9)
-              .width(200)
-              .step(0.1)
-              .ticks(5)
-              .displayValue(false)
-              .default([6,10])
-              .fill('#2196f3')
-              .on('onchange', val => {
-                  var min = val[0]; var max = val[1];
-                  g_map.selectAll("path")
-                      .attr("fill", function(d){
-                          var inst = d.properties.coffeeData;
-                          if(inst != 0 && inst.Aroma <= max && min <= inst.Aroma){
-                              return mapColor(d.properties.value);
-                          }
-                          return "#ccc";
-                      });
-              });
+                // filter on map
+                g_map.selectAll("path.mapPath")
+                     .style("fill", filterMap);
+            });
 
-          d3.select('#slider-aroma')
-              .append('svg')
-              .attr('width', 500)
-              .attr('height', 100)
-              .append('g')
-              .attr('transform', 'translate(30,30)')
-              .call(sliderAroma);
+        d3.select('#slider-acidity')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)')
+            .call(sliderAcidity);
 
-          var sliderAftertaste = d3
-              .sliderBottom()
-              .min(6)
-              .max(9)
-              .width(200)
-              .step(0.1)
-              .ticks(5)
-              .displayValue(false)
-              .default([6,10])
-              .fill('#2196f3')
-              .on('onchange', val => {
-                  var min = val[0]; var max = val[1];
-                  g_map.selectAll("path")
-                      .attr("fill", function(d){
-                          var inst = d.properties.coffeeData;
-                          if(inst != 0 && inst.Aftertaste <= max && min <= inst.Aftertaste){
-                              return mapColor(d.properties.value);
-                          }
-                          return "#ccc";
-                      });
-              });
+        var sliderAroma = d3
+            .sliderBottom()
+            .min(6)
+            .max(9)
+            .width(200)
+            .step(0.1)
+            .ticks(5)
+            .displayValue(false)
+            .default([6,10])
+            .fill('#2196f3')
+            .on('onchange', function(d) {
+                min = d[0]; max = d[1];
 
-          d3.select('#slider-aftertaste')
-              .append('svg')
-              .attr('width', 500)
-              .attr('height', 100)
-              .append('g')
-              .attr('transform', 'translate(30,30)')
-              .call(sliderAftertaste);
+                // change global filter
+                filters.Aroma = [min, max];
 
-          var sliderFlavor = d3
-              .sliderBottom()
-              .min(6)
-              .max(9)
-              .width(200)
-              .step(0.1)
-              .ticks(5)
-              .displayValue(false)
-              .default([6,10])
-              .fill('#2196f3')
-              .on('onchange', val => {
-                  var min = val[0]; var max = val[1];
-                  g_map.selectAll("path")
-                      .attr("fill", function(d){
-                          var inst = d.properties.coffeeData;
-                          if(inst != 0 && inst.Flavor <= max && min <= inst.Flavor){
-                              return mapColor(d.properties.value);
-                          }
-                          return "#ccc";
-                      });
-              });
+                // filter on map
+                g_map.selectAll("path.mapPath")
+                     .style("fill", filterMap);
+            });
 
-          d3.select('#slider-flavor')
-              .append('svg')
-              .attr('width', 500)
-              .attr('height', 100)
-              .append('g')
-              .attr('transform', 'translate(30,30)')
-              .call(sliderFlavor);
+        d3.select('#slider-aroma')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)')
+            .call(sliderAroma);
 
-          });
+        var sliderAftertaste = d3
+            .sliderBottom()
+            .min(6)
+            .max(9)
+            .width(200)
+            .step(0.1)
+            .ticks(5)
+            .displayValue(false)
+            .default([6,10])
+            .fill('#2196f3')
+            .on('onchange', function(d) {
+                min = d[0]; max = d[1];
+
+                // change global filter
+                filters.Aftertaste = [min, max];
+
+                // filter on map
+                g_map.selectAll("path.mapPath")
+                     .style("fill", filterMap);
+            });
+
+        d3.select('#slider-aftertaste')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)')
+            .call(sliderAftertaste);
+
+        var sliderFlavor = d3
+            .sliderBottom()
+            .min(6)
+            .max(9)
+            .width(200)
+            .step(0.1)
+            .ticks(5)
+            .displayValue(false)
+            .default([6,10])
+            .fill('#2196f3')
+            .on('onchange', function(d) {
+                min = d[0]; max = d[1];
+
+                // change global filter
+                filters.Flavor = [min, max];
+
+                // filter on map
+                g_map.selectAll("path.mapPath")
+                     .style("fill", filterMap);
+            });
+
+        d3.select('#slider-flavor')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)')
+            .call(sliderFlavor);
+    });
 });
 
 function zoomed(){
