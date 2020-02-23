@@ -47,6 +47,23 @@ var mapSvg = d3.select("body")
 
 var g_map = mapSvg.append("g");
 
+var svg = d3.select("body")
+                .append("svg")
+                .attr("width", w + margin.left + margin.right)
+                .attr("height", h + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+var yScale = d3.scaleBand()
+                .rangeRound([h, 0])
+                .padding(0.1);
+var xScale = d3.scaleLinear()
+                .range([0,w]);
+    
+var x_axis = d3.axisBottom(xScale);
+var y_axis = d3.axisLeft(yScale);
+
+
+
 mapSvg.call(zoom);
 
 // define legend
@@ -172,7 +189,9 @@ d3.csv("coffee.csv", function(data) {
                         }
                     });
             })
-            .on("click", updateBarChart);
+            .on("click", function(d){
+                updateBarChart(d);
+            });
 
         var sliderAcidity = d3
             .sliderBottom()
@@ -336,114 +355,10 @@ d3.csv("coffee.csv", function(data) {
     });
 
 
-
-    // bar chart
-    //introduced an ordinal scale to handle the left/right positioning of bars and labels along the x-axis
-    var yScale = d3.scaleBand()//an ordinal scale, left to right, evenly spaced
-                .rangeRound([h, 0])//calculate even bands starting at 0 and ending at w, then set this scale’s range to those bands
-                //enable rounding
-                .padding(0.1);//5 percent of the width of each band will be used for spacing in between bands
-    var xScale = d3.scaleLinear()
-                .range([0,w]);
-
-
-    //create svg element
-    var svg = d3.select("body")
-                .append("svg")
-                .attr("width", w + margin.left + margin.right)
-                .attr("height", h + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
-
-    filtered.forEach(function(d) {
-            d.Balance = +d.Balance;
-    });
-    filtered.sort(function(a,b){
-        return +a.Balance - +b.Balance
-    })
-
-
-    xScale.domain([d3.min(filtered, function(d){ return d.Balance;})-0.3,d3.max(filtered, function(d){ return d.Balance;})+0.3])
-    yScale.domain(filtered.map(function(d) { return d.Owner; }))
-
-    svg.selectAll(".bar")
-        .data(filtered)
-        .enter()
-        .append("rect")
-        .attr("class","bar")
-        .attr("y", function(d){
-            return yScale(d.Owner);
-        })
-        .attr("height", yScale.bandwidth())
-        //.attr("x",function(d){
-        //    return xScale(d.Balance);
-        //})
-        .attr("width", function(d){
-            return xScale(d.Balance);
-        })
-        .attr("fill", function(d){ // for new bars
-            return "rgb(173,153,134)";
-        })
-        .on("mouseover", function(d) {
-            // get this bar's x/y values, then augment for the tooltip
-            var yPosition=-parseFloat(d3.select(this).attr("y")) + yScale.bandwidth() / 2;
-            var xPosition=parseFloat(d3.select(this).attr("width")*1.3);
-
-            //update the tooltip position and value
-                d3.select("#tooltip")
-                    .style("left", xPosition + "px")
-                    .style("bottom", yPosition + "px")
-                    .select("#value")
-                    .html(
-                        "Country: " + d.Country + "<br/>"
-                        + "Region: " + d.Region + "<br/>"
-                        + "Producer: " + d.Producer + "<br/>"
-                        + "Owner: " + d.Owner + "<br/>"
-                        + "mean altitude: " + d.altitude_mean_meters + "<br/>"
-                        + "Balance: " + d.Balance + "<br/>"
-                        + "Aroma: " + d.Aroma + "<br/>"
-                        + "Flavor: " + d.Flavor + "<br/>"
-                        + "Aftertaste: " + d.Aftertaste + "<br/>"
-                        + "Acidity: " + d.Acidity + "<br/>"
-                        + "Body: " + d.Body
-                    );
-                // show the tooltip
-                d3.select("#tooltip").classed("hidden",false);
-        })
-        .on("mouseout", function(d) {
-                // hide the tooltip
-                d3.select("#tooltip").classed("hidden", true);
-
-        })
-
-    svg.append("g")
-        .attr("class","axis")
-        .attr("transform", "translate(0," + h + ")")
-        .call(d3.axisBottom(xScale));
-
-    svg.append("g")
-        .attr("class","axis")
-        .attr("transform","translate(" + 0 + ",0)")
-        .call(d3.axisLeft(yScale));
-
-    svg.append("text")
-        .attr("transform","rotate(-90)")
-        .attr("y", 0 - margin.left + 10)
-        .attr("x", 0 - (h/2))
-        .attr("dy","1em")
-        .style("text-anchor", "middle")
-        .style("font-family","Lucida Calligraphy")
-        .style("font-size","18px")
-        .text("Coffee Owners");
-
-    svg.append("text")
-        .attr("y", h + 10)
-        .attr("x", w)
-        .attr("dx","1em")
-        .style("text-anchor", "right")
-        .style("font-family","Lucida Calligraphy")
-        .style("font-size","14px")
-        .text("Balance");
+// bar chart
+    
+    
+    
 });
 
 function zoomed(){
@@ -502,6 +417,7 @@ function filterMap(d) {
 }
 
 function updateBarChart(d) {
+    
     var country = d.properties.ADMIN;
 
     dataset = filtered.filter(function(d) {
@@ -509,4 +425,124 @@ function updateBarChart(d) {
     });
 
     console.log(dataset);
-}
+    
+    dataset.forEach(function(d) {
+        d.Balance = +d.Balance;
+    });
+    /*
+    dataset.sort(function(a,b){
+        return +a.Balance - +b.Balance
+    })
+    */
+
+    var t = d3.transition()
+                .duration(500);
+
+
+    xScale.domain([d3.min(dataset, function(d){ return d.Balance;})-0.3,d3.max(dataset, function(d){ return d.Balance;})+0.3])
+    yScale.domain(dataset.map(function(d) { return d.Owner; }))
+    
+
+    svg.append("g")
+        .attr("class","x axis")
+        .attr("transform", "translate(0," + h + ")");
+
+    svg.append("g")
+        .attr("class","y axis")
+        .attr("transform","translate(" + 0 + ",0)"); 
+
+    var bars = svg.selectAll(".bar")
+        .data(dataset)
+
+    bars
+        .exit()
+        .remove();
+
+    var new_bars = bars
+        .enter()
+        .append("rect")
+        .attr("class","bar")
+        .attr("y", function(d){
+            return yScale(d.Owner);
+        })
+        .attr("height", yScale.bandwidth())
+        //.attr("x",function(d){
+        //    return xScale(d.Balance);
+        //})
+        .attr("width", function(d){
+            return xScale(d.Balance);
+        })
+        .attr("fill", "rgb(173,153,134)")
+        .on("mouseover", function(d) {
+           
+            var yPosition=mapH + parseFloat(d3.select(this).attr("y")) + yScale.bandwidth() / 2;
+            var xPosition=parseFloat(d3.select(this).attr("width")*1.3);
+            
+
+            //update the tooltip position and value
+                d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px")
+                    .select("#value")
+                    .html(
+                        "Country: " + d.Country + "<br/>"
+                        + "Region: " + d.Region + "<br/>"
+                        + "Producer: " + d.Producer + "<br/>"
+                        + "Owner: " + d.Owner + "<br/>"
+                        + "mean altitude: " + d.altitude_mean_meters + "<br/>"
+                        + "Balance: " + d.Balance + "<br/>"
+                        + "Aroma: " + d.Aroma + "<br/>"
+                        + "Flavor: " + d.Flavor + "<br/>"
+                        + "Aftertaste: " + d.Aftertaste + "<br/>"
+                        + "Acidity: " + d.Acidity + "<br/>"
+                        + "Body: " + d.Body
+                    );
+                // show the tooltip
+                d3.select("#tooltip").classed("hidden",false);
+        })
+        .on("mouseout", function(d) {
+                // hide the tooltip
+                d3.select("#tooltip").classed("hidden", true);
+
+        })
+    
+    new_bars.merge(bars)
+        .transition(t)
+        .attr('width',function(d){
+            return xScale(+d.Balance);
+        })
+        .attr('y', function(d){
+            return yScale(d.Owner);
+        })
+        .attr('height', yScale.bandwidth())
+        .attr('fill', "rgb(173,153,134)")
+    
+    svg.select('.x.axis')
+        .call(x_axis);
+    
+    svg.select('.y.axis')
+        .call(y_axis);
+
+
+
+    svg.append("text")
+        .attr("transform","rotate(-90)")
+        .attr("y", 0 - margin.left + 10)
+        .attr("x", 0 - (h/2))
+        .attr("dy","1em")
+        .style("text-anchor", "middle")
+        .style("font-family","Lucida Calligraphy")
+        .style("font-size","18px")
+        .text("Coffee Owners");
+
+    svg.append("text")
+        .attr("y", h + 10)
+        .attr("x", w)
+        .attr("dx","1em")
+        .style("text-anchor", "right")
+        .style("font-family","Lucida Calligraphy")
+        .style("font-size","14px")
+        .text("Balance");
+
+    
+};
