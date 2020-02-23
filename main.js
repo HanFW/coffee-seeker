@@ -123,39 +123,38 @@ d3.csv("coffee.csv", function(data) {
 
         // tooptip on hover
         g_map.selectAll("path")
-             .data(mapjson.features)
-             .on("mouseover", function(d) {
-                  d3.select("#tooltip-map")
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px")
-                    .html(d.properties.ADMIN)
-                    .classed("hidden",false);
+            .data(mapjson.features)
+            .on("mouseover", function(d) {
+                d3.select("#tooltip-map")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+                .html(d.properties.ADMIN)
+                .classed("hidden",false);
 
-                  d3.select(this)
-                    .style("fill", "#537534");
-              })
-              .on("mouseout", function(d) {
-                      d3.select("#tooltip-map").classed("hidden", true);
+                d3.select(this)
+                .style("fill", "#537534");
+            })
+            .on("mouseout", function(d) {
+                    d3.select("#tooltip-map").classed("hidden", true);
 
-                      d3.select(this)
-                        .style("fill", function(d) {
-                           //Get data value
-                           var value = d.properties.value;
+                    d3.select(this)
+                    .style("fill", function(d) {
+                        //Get data value
+                        var value = d.properties.value;
 
-                           if (value > 0) {
-                           	//If value exists…
-                           	return mapColor(value);
-                           } else {
-                           	//If value is undefined…
-                           	return "#ccc";
-                           }
-                        });
-              })
-              .on("click", function(d) {
-                  // to be changed
-              });
-
-    });
+                        if (value > 0) {
+                        //If value exists…
+                        return mapColor(value);
+                        } else {
+                        //If value is undefined…
+                        return "#ccc";
+                        }
+                    });
+            })
+            .on("click", function(d) {
+                // to be changed
+            });
+        })
 
 });
 
