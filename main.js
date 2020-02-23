@@ -57,11 +57,30 @@ d3.csv("coffee.csv", function(data) {
                 // console.log(mapjson.features[i].properties.name);
                 mapjson.features[i].properties.value = 0;
             } else {
+                // return the max balance value in the country
                 mapjson.features[i].properties.value = d3.max(dataByCountry, function(d) { return d.Balance; });
                 domainBycountries.push(+mapjson.features[i].properties.value);
-            }
 
-            // console.log(mapjson.features[i].properties.value);
+                // bind other coffee data
+                mapjson.features[i].properties.coffeedata = [];
+                for (j = 0; j < dataByCountry.length; j++) {
+                    var coffee = {
+                        "Country": dataByCountry[j].Country,
+                        "Region": dataByCountry[j].Region,
+                        "Producer": dataByCountry[j].Producer,
+                        "Owner": dataByCountry[j].Owner,
+                        "Altitude": dataByCountry[j].altitude_mean_meters,
+                        "Balance": dataByCountry[j].Balance,
+                        "Aroma": dataByCountry[j].Aroma,
+                        "Flavor": dataByCountry[j].Flavor,
+                        "Aftertaste": dataByCountry[j].Aftertaste,
+                        "Acidity": dataByCountry[j].Acidity,
+                        "Body": dataByCountry[j].Body
+                    }
+                    mapjson.features[i].properties.coffeedata.push(coffee);
+                }
+                // console.log(mapjson.features[i].properties.coffeedata);
+            }
         }
 
         // define scale
@@ -79,6 +98,8 @@ d3.csv("coffee.csv", function(data) {
              .style("fill", function(d) {
                 //Get data value
                 var value = d.properties.value;
+
+                // console.log(d.properties.coffeedata);
 
                 if (value > 0) {
                 	//If value exists…
@@ -102,39 +123,38 @@ d3.csv("coffee.csv", function(data) {
 
         // tooptip on hover
         g_map.selectAll("path")
-             .data(mapjson.features)
-             .on("mouseover", function(d) {
-                  d3.select("#tooltip-map")
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px")
-                    .html(d.properties.ADMIN)
-                    .classed("hidden",false);
+            .data(mapjson.features)
+            .on("mouseover", function(d) {
+                d3.select("#tooltip-map")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+                .html(d.properties.ADMIN)
+                .classed("hidden",false);
 
-                  d3.select(this)
-                    .style("fill", "#537534");
-              })
-              .on("mouseout", function(d) {
-                      d3.select("#tooltip-map").classed("hidden", true);
+                d3.select(this)
+                .style("fill", "#537534");
+            })
+            .on("mouseout", function(d) {
+                    d3.select("#tooltip-map").classed("hidden", true);
 
-                      d3.select(this)
-                        .style("fill", function(d) {
-                           //Get data value
-                           var value = d.properties.value;
+                    d3.select(this)
+                    .style("fill", function(d) {
+                        //Get data value
+                        var value = d.properties.value;
 
-                           if (value > 0) {
-                           	//If value exists…
-                           	return mapColor(value);
-                           } else {
-                           	//If value is undefined…
-                           	return "#ccc";
-                           }
-                        });
-              })
-              .on("click", function(d) {
-                  // to be changed
-              });
-
-    });
+                        if (value > 0) {
+                        //If value exists…
+                        return mapColor(value);
+                        } else {
+                        //If value is undefined…
+                        return "#ccc";
+                        }
+                    });
+            })
+            .on("click", function(d) {
+                // to be changed
+            });
+        })
 
 });
 
