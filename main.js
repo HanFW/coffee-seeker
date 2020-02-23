@@ -57,11 +57,30 @@ d3.csv("coffee.csv", function(data) {
                 // console.log(mapjson.features[i].properties.name);
                 mapjson.features[i].properties.value = 0;
             } else {
+                // return the max balance value in the country
                 mapjson.features[i].properties.value = d3.max(dataByCountry, function(d) { return d.Balance; });
                 domainBycountries.push(+mapjson.features[i].properties.value);
-            }
 
-            // console.log(mapjson.features[i].properties.value);
+                // bind other coffee data
+                mapjson.features[i].properties.coffeedata = [];
+                for (j = 0; j < dataByCountry.length; j++) {
+                    var coffee = {
+                        "Country": dataByCountry[j].Country,
+                        "Region": dataByCountry[j].Region,
+                        "Producer": dataByCountry[j].Producer,
+                        "Owner": dataByCountry[j].Owner,
+                        "Altitude": dataByCountry[j].altitude_mean_meters,
+                        "Balance": dataByCountry[j].Balance,
+                        "Aroma": dataByCountry[j].Aroma,
+                        "Flavor": dataByCountry[j].Flavor,
+                        "Aftertaste": dataByCountry[j].Aftertaste,
+                        "Acidity": dataByCountry[j].Acidity,
+                        "Body": dataByCountry[j].Body
+                    }
+                    mapjson.features[i].properties.coffeedata.push(coffee);
+                }
+                // console.log(mapjson.features[i].properties.coffeedata);
+            }
         }
 
         // define scale
@@ -79,6 +98,8 @@ d3.csv("coffee.csv", function(data) {
              .style("fill", function(d) {
                 //Get data value
                 var value = d.properties.value;
+
+                // console.log(d.properties.coffeedata);
 
                 if (value > 0) {
                 	//If value exists…
