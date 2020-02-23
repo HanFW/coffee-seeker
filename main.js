@@ -3,6 +3,14 @@ var mapW = window.innerWidth * 0.85;
 var mapH = 500;
 var scale;
 var domainBycountries = [];
+var filters = {
+   "Aroma": [0,10],
+   "Flavor": [0,10],
+   "Acidity": [0,10],
+   "Body": [0,10],
+   "Aftertaste": [0,10]
+}
+var filtered = [];
 
 // define map projection
 var mapProjection = d3.geoMercator()
@@ -97,7 +105,7 @@ d3.csv("coffee.csv", function(data) {
              .attr('class', 'mapPath')
              .attr("d", mapPath)
              .style("fill", function(d) {
-                    
+
                 var value = d.properties.value;
 
                 // console.log(d.properties.coffeedata);
@@ -155,50 +163,54 @@ d3.csv("coffee.csv", function(data) {
             .on("click", function(d) {
                 // to be changed
             });
-        })
-    
-    var min, max;
-    var slider = d3
-        .sliderBottom()
-        .min(6)
-        .max(9) 
-        .width(200)
-        .step(0.1)
-        .ticks(5)
-        .displayValue(false)
-        .default([6,10])
-        .fill('#2196f3')
-        .on('onchange', val => {
-            // d3.select('#value').text(val.map(d3.format('.1f')).join('-'));
-            min = val[0]; max = val[1];
-            g_map.selectAll("path")
-                // .filter(function(d) {
-                //     //console.log(d);
-                //     //console.log(d.properties.coffeeData);
-                //     if(d.properties.coffeeData == 0){
-                //         return false;
-                //     }
-                //     console.log(d.properties.coffeeData)
-                //     console.log(d)
-                //     return d.properties.coffeeData.Acidity <= max && min <= d.properties.coffeeData.Acidity;
-                // })
-                .attr("fill", function(d){
-                    var inst = d.properties.coffeeData;
-                    if(inst != 0 && inst.Acidity <= max && min <= inst.Acidity){
-                        return mapColor(d.properties.value);
-                    }
-                    return "#ccc";
-                });
-        });
-    
-    d3.select('#slider')
-        .append('svg')
-        .attr('width', 500)
-        .attr('height', 100)
-        .append('g')
-        .attr('transform', 'translate(30,30)')
-        .call(slider);
 
+          var slider = d3
+              .sliderBottom()
+              .min(6)
+              .max(9)
+              .width(200)
+              .step(0.1)
+              .ticks(5)
+              .displayValue(false)
+              .default([6,10])
+              .fill('#2196f3')
+              .on('onchange', function(d) {
+                  // d3.select('#value').text(val.map(d3.format('.1f')).join('-'));
+                  min = d[0]; max = d[1];
+
+                  // change global filter
+                  filters.Acidity = [min, max];
+
+                  // filter on map
+                  g_map.selectAll("path.mapPath")
+                      // .filter(function(d) {
+                      //     //console.log(d);
+                      //     //console.log(d.properties.coffeeData);
+                      //     if(d.properties.coffeeData == 0){
+                      //         return false;
+                      //     }
+                      //     console.log(d.properties.coffeeData)
+                      //     console.log(d)
+                      //     return d.properties.coffeeData.Acidity <= max && min <= d.properties.coffeeData.Acidity;
+                      // })
+                      .style("fill", filterMap);
+
+                      // function(d){
+                      //     // if(inst != 0 && inst.Acidity <= max && min <= inst.Acidity){
+                      //     //     return mapColor(inst.Balance);
+                      //     // }
+                      //     // return "#ccc";
+                      // });
+              });
+
+          d3.select('#slider')
+              .append('svg')
+              .attr('width', 500)
+              .attr('height', 100)
+              .append('g')
+              .attr('transform', 'translate(30,30)')
+              .call(slider);
+    });
 });
 
 function zoomed(){
@@ -206,7 +218,53 @@ function zoomed(){
          .attr("transform", d3.event.transform);
 }
 
+function filterMap(d) {
+    var inst = d.properties.coffeeData;
+    var qualified_in_the_country = [];
+    var country = d.properties.ADMIN;
+    // console.log(inst);
 
+    if (inst === 0) {
+        return "#ccc";
+    }
+
+    // find all coffee in the range
+    // loop through coffee in each country
+    for (j = 0; j < inst.length; j++) {
+        var acidity = +inst[j].Acidity;
+        var aroma = +inst[j].Aroma;
+        var flavor = +inst[j].Flavor;
+        var body = +inst[j].Body;
+        var aftertaste = +inst[j].Aftertaste;
+        // console.log(acidity + " " + aroma + " " + flavor + " " + body + " " +aftertaste);
+
+        if ( // filter by all five attributes
+            acidity >= filters.Acidity[0] && acidity <= filters.Acidity[1]
+            && aroma >= filters.Aroma[0] && aroma <= filters.Aroma[1]
+            && flavor >= filters.Flavor[0] && flavor <= filters.Flavor[1]
+            && body >= filters.Body[0] && aroma <= filters.Body[1]
+            && aftertaste >= filters.Aftertaste[0] && aftertaste <= filters.Aftertaste[1]
+        ) {
+            qualified_in_the_country.push(inst[j]);
+        }
+    }
+
+    // if no qualified data in the country
+    if(qualified_in_the_country.length == 0) {
+        return "#ccc";
+    }
+
+    // add all qualified data in the country to global filtered data
+    filtered.push({country, qualified_in_the_country});
+
+    // find the new highest Balance
+    highestBalance = d3.max(qualified_in_the_country, function(d) { return +d.Balance; });
+
+    // assign new highest balance to country on the map
+    d.properties.value = highestBalance;
+
+    return mapColor(highestBalance);
+}
 
 
 
@@ -217,8 +275,8 @@ var h = 800 - margin.top - margin.bottom;
 
 d3.csv("coffeetest.csv", function(data) {
     //  console.log(data);
-    
-    
+
+
 
 
     //var dataset = data;
@@ -243,16 +301,16 @@ d3.csv("coffeetest.csv", function(data) {
     data.forEach(function(d) {
             d.Balance = +d.Balance;
     });
-    data.sort(function(a,b){ 
+    data.sort(function(a,b){
         return +a.Balance - +b.Balance
     })
-        
+
 
     xScale.domain([d3.min(data, function(d){ return d.Balance;})-0.3,d3.max(data, function(d){ return d.Balance;})+0.3])
     yScale.domain(data.map(function(d) { return d.Owner; }))
 
     svg.selectAll(".bar")
-        .data(data)        
+        .data(data)
         .enter()
         .append("rect")
         .attr("class","bar")
@@ -299,8 +357,8 @@ d3.csv("coffeetest.csv", function(data) {
                 // hide the tooltip
                 d3.select("#tooltip").classed("hidden", true);
 
-        })       
-        
+        })
+
     svg.append("g")
         .attr("class","axis")
         .attr("transform", "translate(0," + h + ")")
