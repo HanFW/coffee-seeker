@@ -97,7 +97,7 @@ d3.csv("coffee.csv", function(data) {
              .attr('class', 'mapPath')
              .attr("d", mapPath)
              .style("fill", function(d) {
-                //Get data value
+                    
                 var value = d.properties.value;
 
                 // console.log(d.properties.coffeedata);
@@ -160,11 +160,11 @@ d3.csv("coffee.csv", function(data) {
     var min, max;
     var slider = d3
         .sliderBottom()
-        .min(0)
-        .max(10) 
+        .min(6)
+        .max(9) 
         .width(200)
         .step(0.1)
-        .ticks(10)
+        .ticks(5)
         .displayValue(false)
         .default([6,10])
         .fill('#2196f3')
@@ -172,16 +172,23 @@ d3.csv("coffee.csv", function(data) {
             // d3.select('#value').text(val.map(d3.format('.1f')).join('-'));
             min = val[0]; max = val[1];
             g_map.selectAll("path")
-                .filter(function(d) {
-                    //console.log(d);
-                    //console.log(d.properties.coffeeData);
-                    if(d.properties.coffeeData == 0){
-                        return false;
+                // .filter(function(d) {
+                //     //console.log(d);
+                //     //console.log(d.properties.coffeeData);
+                //     if(d.properties.coffeeData == 0){
+                //         return false;
+                //     }
+                //     console.log(d.properties.coffeeData)
+                //     console.log(d)
+                //     return d.properties.coffeeData.Acidity <= max && min <= d.properties.coffeeData.Acidity;
+                // })
+                .attr("fill", function(d){
+                    var inst = d.properties.coffeeData;
+                    if(inst != 0 && inst.Acidity <= max && min <= inst.Acidity){
+                        return mapColor(d.properties.value);
                     }
-                    console.log(d.properties.coffeeData)
-                    return d.properties.coffeeData.Acidity <= max && min <= d.properties.coffeeData.Acidity;
-                })
-                .attr("fill", "red");
+                    return "#ccc";
+                });
         });
     
     d3.select('#slider')
