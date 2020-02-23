@@ -93,6 +93,7 @@ d3.csv("coffee.csv", function(data) {
         var legend = d3.legendColor()
                        .shapeHeight(10)
                        .shapeWidth(80)
+                       .title("Balance rating")
                        .orient("horizontal")
                        .scale(scale);
 
