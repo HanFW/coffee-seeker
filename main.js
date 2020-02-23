@@ -178,7 +178,7 @@ d3.csv("coffee.csv", function(data) {
             .sliderBottom()
             .min(6)
             .max(9)
-            .width(200)
+            .width(160)
             .step(0.1)
             .ticks(5)
             .displayValue(false)
@@ -200,7 +200,7 @@ d3.csv("coffee.csv", function(data) {
 
         d3.select('#slider-acidity')
             .append('svg')
-            .attr('width', 500)
+            .attr('width', 200)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)')
@@ -210,7 +210,7 @@ d3.csv("coffee.csv", function(data) {
             .sliderBottom()
             .min(6)
             .max(9)
-            .width(200)
+            .width(160)
             .step(0.1)
             .ticks(5)
             .displayValue(false)
@@ -232,7 +232,7 @@ d3.csv("coffee.csv", function(data) {
 
         d3.select('#slider-aroma')
             .append('svg')
-            .attr('width', 500)
+            .attr('width', 200)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)')
@@ -242,7 +242,7 @@ d3.csv("coffee.csv", function(data) {
             .sliderBottom()
             .min(6)
             .max(9)
-            .width(200)
+            .width(160)
             .step(0.1)
             .ticks(5)
             .displayValue(false)
@@ -264,17 +264,49 @@ d3.csv("coffee.csv", function(data) {
 
         d3.select('#slider-aftertaste')
             .append('svg')
-            .attr('width', 500)
+            .attr('width', 200)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)')
             .call(sliderAftertaste);
 
+        var sliderBody = d3
+            .sliderBottom()
+            .min(6)
+            .max(9)
+            .width(160)
+            .step(0.1)
+            .ticks(5)
+            .displayValue(false)
+            .default([6,10])
+            .fill('#2196f3')
+            .on('onchange', function(d) {
+                min = d[0]; max = d[1];
+
+                // change global filter
+                filters.Body = [min, max];
+
+                // empty filtered data
+                filtered = [];
+
+                // filter on map
+                g_map.selectAll("path.mapPath")
+                     .style("fill", filterMap);
+            });
+
+        d3.select('#slider-body')
+            .append('svg')
+            .attr('width', 200)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)')
+            .call(sliderBody);
+
         var sliderFlavor = d3
             .sliderBottom()
             .min(6)
             .max(9)
-            .width(200)
+            .width(160)
             .step(0.1)
             .ticks(5)
             .displayValue(false)
@@ -296,7 +328,7 @@ d3.csv("coffee.csv", function(data) {
 
         d3.select('#slider-flavor')
             .append('svg')
-            .attr('width', 500)
+            .attr('width', 200)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)')
