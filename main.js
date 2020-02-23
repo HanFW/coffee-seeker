@@ -173,13 +173,9 @@ var h = 800 - margin.top - margin.bottom;
 
 
 d3.csv("coffeetest.csv", function(data) {
-<<<<<<< HEAD
      console.log(data);
     
     
-=======
-     // console.log(data);
->>>>>>> 2dcff412fe0f1d4cfbedf00f160c1e04f84dd872
 
 
     //var dataset = data;
@@ -260,43 +256,8 @@ d3.csv("coffeetest.csv", function(data) {
                 // hide the tooltip
                 d3.select("#tooltip").classed("hidden", true);
 
-<<<<<<< HEAD
         })       
         
-=======
-        })
-        .on("click", function(){                                   //click to sort the bars
-            sortBars();
-        })
-        //Define sort order flag
-        var sortOrder = false;
-
-        //Define sort function
-        var sortBars = function() {
-
-            //Flip value of sortOrder
-            sortOrder = !sortOrder;
-
-            svg.selectAll("rect")
-            .sort(function(a, b) {
-                    if (sortOrder) {
-                        return d3.ascending(a, b);
-                    } else {
-                        return d3.descending(a, b);
-                    }
-                })
-            .transition()
-            .delay(function(d) {
-                return d.Balance * 50;
-            })
-            .duration(1000)
-            .attr("y", function(d) {
-                    return yScale(d.Owner);
-            })
-
-        };
-
->>>>>>> 2dcff412fe0f1d4cfbedf00f160c1e04f84dd872
     svg.append("g")
         .attr("class","axis")
         .attr("transform", "translate(0," + h + ")")
