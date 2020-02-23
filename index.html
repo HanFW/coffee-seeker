@@ -6,36 +6,14 @@
         <script type="text/javascript" src="https://d3js.org/d3.v4.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
         <script src="https://unpkg.com/d3-simple-slider"></script>
+        <script src="https://d3js.org/d3-format.v1.min.js"></script>
         <script src='d3-simple-slider.js'></script>
         <link href="main.css" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
         <div id="slider">Acidity</div>
-        <p id="value"></p>
-        <script>
-            var slider = d3
-                .sliderBottom()
-                .min(6)
-                .max(10) 
-                .width(300)
-                .ticks(5)
-                .tickFormat(d3.format('.1f'))
-                .displayValue(false)
-                .default([6,10])
-                .fill('#2196f3')
-                .on('onchange', val => {
-                    d3.select('#value').text(val);
-                });
-            
-            d3.select('#slider')
-                .append('svg')
-                .attr('width', 500)
-                .attr('height', 100)
-                .append('g')
-                .attr('transform', 'translate(30,30)')
-                .call(slider);
-        </script>
+
         <!-- <div class="row align-items-center">
             <div class="col-sm-2"><p id="value-range"></p></div>
             <div class="col-sm"><div id="slider-range"></div></div>

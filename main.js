@@ -56,13 +56,14 @@ d3.csv("coffee.csv", function(data) {
             if(dataByCountry.length == 0) {
                 // console.log(mapjson.features[i].properties.name);
                 mapjson.features[i].properties.value = 0;
+                mapjson.features[i].properties.coffeeData = 0;
             } else {
                 // return the max balance value in the country
                 mapjson.features[i].properties.value = d3.max(dataByCountry, function(d) { return d.Balance; });
                 domainBycountries.push(+mapjson.features[i].properties.value);
 
                 // bind other coffee data
-                mapjson.features[i].properties.coffeedata = [];
+                mapjson.features[i].properties.coffeeData = [];
                 for (j = 0; j < dataByCountry.length; j++) {
                     var coffee = {
                         "Country": dataByCountry[j].Country,
@@ -77,7 +78,7 @@ d3.csv("coffee.csv", function(data) {
                         "Acidity": dataByCountry[j].Acidity,
                         "Body": dataByCountry[j].Body
                     }
-                    mapjson.features[i].properties.coffeedata.push(coffee);
+                    mapjson.features[i].properties.coffeeData.push(coffee);
                 }
                 // console.log(mapjson.features[i].properties.coffeedata);
             }
@@ -155,6 +156,41 @@ d3.csv("coffee.csv", function(data) {
                 // to be changed
             });
         })
+    
+    var min, max;
+    var slider = d3
+        .sliderBottom()
+        .min(0)
+        .max(10) 
+        .width(200)
+        .step(0.1)
+        .ticks(10)
+        .displayValue(false)
+        .default([6,10])
+        .fill('#2196f3')
+        .on('onchange', val => {
+            // d3.select('#value').text(val.map(d3.format('.1f')).join('-'));
+            min = val[0]; max = val[1];
+            g_map.selectAll("path")
+                .filter(function(d) {
+                    //console.log(d);
+                    //console.log(d.properties.coffeeData);
+                    if(d.properties.coffeeData == 0){
+                        return false;
+                    }
+                    console.log(d.properties.coffeeData)
+                    return d.properties.coffeeData.Acidity <= max && min <= d.properties.coffeeData.Acidity;
+                })
+                .attr("fill", "red");
+        });
+    
+    d3.select('#slider')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)')
+        .call(slider);
 
 });
 
@@ -173,7 +209,7 @@ var h = 800 - margin.top - margin.bottom;
 
 
 d3.csv("coffeetest.csv", function(data) {
-     console.log(data);
+    //  console.log(data);
     
     
 
