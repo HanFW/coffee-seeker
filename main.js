@@ -1,6 +1,8 @@
-// define width and height
+// define width and height for map
 var mapW = window.innerWidth * 0.85;
 var mapH = 500;
+
+// define other variables for map
 var scale;
 var domainBycountries = [];
 var filters = {
@@ -11,6 +13,13 @@ var filters = {
    "Aftertaste": [0,10]
 }
 var filtered = [];
+
+// define width and height for bar chart
+var margin = {top: 20, right: 80, bottom: 200, left: 180};
+var w = 1200 - margin.left - margin.right;
+var h = 800 - margin.top - margin.bottom;
+
+
 
 // define map projection
 var mapProjection = d3.geoMercator()
@@ -49,6 +58,9 @@ mapSvg.append("g")
 d3.csv("coffee.csv", function(data) {
     dataset = data;
     // console.log(dataset);
+
+    // initialize filtered data
+    filtered = dataset;
 
     d3.json("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson", function(mapjson) {
 
@@ -160,9 +172,7 @@ d3.csv("coffee.csv", function(data) {
                         }
                     });
             })
-            .on("click", function(d) {
-                // to be changed
-            });
+            .on("click", updateBarChart);
 
         var sliderAcidity = d3
             .sliderBottom()
@@ -179,6 +189,9 @@ d3.csv("coffee.csv", function(data) {
 
                 // change global filter
                 filters.Acidity = [min, max];
+
+                // empty filtered data
+                filtered = [];
 
                 // filter on map
                 g_map.selectAll("path.mapPath")
@@ -209,6 +222,9 @@ d3.csv("coffee.csv", function(data) {
                 // change global filter
                 filters.Aroma = [min, max];
 
+                // empty filtered data
+                filtered = [];
+
                 // filter on map
                 g_map.selectAll("path.mapPath")
                      .style("fill", filterMap);
@@ -237,6 +253,9 @@ d3.csv("coffee.csv", function(data) {
 
                 // change global filter
                 filters.Aftertaste = [min, max];
+
+                // empty filtered data
+                filtered = [];
 
                 // filter on map
                 g_map.selectAll("path.mapPath")
@@ -267,6 +286,9 @@ d3.csv("coffee.csv", function(data) {
                 // change global filter
                 filters.Flavor = [min, max];
 
+                // empty filtered data
+                filtered = [];
+
                 // filter on map
                 g_map.selectAll("path.mapPath")
                      .style("fill", filterMap);
@@ -280,78 +302,10 @@ d3.csv("coffee.csv", function(data) {
             .attr('transform', 'translate(30,30)')
             .call(sliderFlavor);
     });
-});
-
-function zoomed(){
-    g_map.selectAll('path')
-         .attr("transform", d3.event.transform);
-}
-
-function filterMap(d) {
-    var inst = d.properties.coffeeData;
-    var qualified_in_the_country = [];
-    var country = d.properties.ADMIN;
-    // console.log(inst);
-
-    if (inst === 0) {
-        return "#ccc";
-    }
-
-    // find all coffee in the range
-    // loop through coffee in each country
-    for (j = 0; j < inst.length; j++) {
-        var acidity = +inst[j].Acidity;
-        var aroma = +inst[j].Aroma;
-        var flavor = +inst[j].Flavor;
-        var body = +inst[j].Body;
-        var aftertaste = +inst[j].Aftertaste;
-        // console.log(acidity + " " + aroma + " " + flavor + " " + body + " " +aftertaste);
-
-        if ( // filter by all five attributes
-            acidity >= filters.Acidity[0] && acidity <= filters.Acidity[1]
-            && aroma >= filters.Aroma[0] && aroma <= filters.Aroma[1]
-            && flavor >= filters.Flavor[0] && flavor <= filters.Flavor[1]
-            && body >= filters.Body[0] && aroma <= filters.Body[1]
-            && aftertaste >= filters.Aftertaste[0] && aftertaste <= filters.Aftertaste[1]
-        ) {
-            qualified_in_the_country.push(inst[j]);
-        }
-    }
-
-    // if no qualified data in the country
-    if(qualified_in_the_country.length == 0) {
-        return "#ccc";
-    }
-
-    // add all qualified data in the country to global filtered data
-    filtered.push({country, qualified_in_the_country});
-
-    // find the new highest Balance
-    highestBalance = d3.max(qualified_in_the_country, function(d) { return +d.Balance; });
-
-    // assign new highest balance to country on the map
-    d.properties.value = highestBalance;
-
-    return mapColor(highestBalance);
-}
 
 
 
-
-
-var margin = {top: 20, right: 80, bottom: 200, left: 180};
-var w = 1200 - margin.left - margin.right;
-var h = 800 - margin.top - margin.bottom;
-
-
-d3.csv("coffeetest.csv", function(data) {
-    //  console.log(data);
-
-
-
-
-    //var dataset = data;
-
+    // bar chart
     //introduced an ordinal scale to handle the left/right positioning of bars and labels along the x-axis
     var yScale = d3.scaleBand()//an ordinal scale, left to right, evenly spaced
                 .rangeRound([h, 0])//calculate even bands starting at 0 and ending at w, then set this scale’s range to those bands
@@ -369,19 +323,19 @@ d3.csv("coffeetest.csv", function(data) {
                 .append("g")
                 .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
-    data.forEach(function(d) {
+    filtered.forEach(function(d) {
             d.Balance = +d.Balance;
     });
-    data.sort(function(a,b){
+    filtered.sort(function(a,b){
         return +a.Balance - +b.Balance
     })
 
 
-    xScale.domain([d3.min(data, function(d){ return d.Balance;})-0.3,d3.max(data, function(d){ return d.Balance;})+0.3])
-    yScale.domain(data.map(function(d) { return d.Owner; }))
+    xScale.domain([d3.min(filtered, function(d){ return d.Balance;})-0.3,d3.max(filtered, function(d){ return d.Balance;})+0.3])
+    yScale.domain(filtered.map(function(d) { return d.Owner; }))
 
     svg.selectAll(".bar")
-        .data(data)
+        .data(filtered)
         .enter()
         .append("rect")
         .attr("class","bar")
@@ -458,6 +412,67 @@ d3.csv("coffeetest.csv", function(data) {
         .style("font-family","Lucida Calligraphy")
         .style("font-size","14px")
         .text("Balance");
-
-
 });
+
+function zoomed(){
+    g_map.selectAll('path')
+         .attr("transform", d3.event.transform);
+}
+
+function filterMap(d) {
+    var inst = d.properties.coffeeData;
+    var qualified_in_the_country = [];
+    var country = d.properties.ADMIN;
+    // console.log(inst);
+
+    if (inst === 0) {
+        return "#ccc";
+    }
+
+    // find all coffee in the range
+    // loop through coffee in each country
+    for (j = 0; j < inst.length; j++) {
+        var acidity = +inst[j].Acidity;
+        var aroma = +inst[j].Aroma;
+        var flavor = +inst[j].Flavor;
+        var body = +inst[j].Body;
+        var aftertaste = +inst[j].Aftertaste;
+        // console.log(acidity + " " + aroma + " " + flavor + " " + body + " " +aftertaste);
+
+        if ( // filter by all five attributes
+            acidity >= filters.Acidity[0] && acidity <= filters.Acidity[1]
+            && aroma >= filters.Aroma[0] && aroma <= filters.Aroma[1]
+            && flavor >= filters.Flavor[0] && flavor <= filters.Flavor[1]
+            && body >= filters.Body[0] && aroma <= filters.Body[1]
+            && aftertaste >= filters.Aftertaste[0] && aftertaste <= filters.Aftertaste[1]
+        ) {
+            qualified_in_the_country.push(inst[j]);
+
+            // add qualified data to global filtered data
+            filtered.push(inst[j]);
+        }
+    }
+
+    // if no qualified data in the country
+    if(qualified_in_the_country.length == 0) {
+        return "#ccc";
+    }
+
+    // find the new highest Balance
+    highestBalance = d3.max(qualified_in_the_country, function(d) { return +d.Balance; });
+
+    // assign new highest balance to country on the map
+    d.properties.value = highestBalance;
+
+    return mapColor(highestBalance);
+}
+
+function updateBarChart(d) {
+    var country = d.properties.ADMIN;
+
+    dataset = filtered.filter(function(d) {
+        return d.Country == country;
+    });
+    
+    console.log(dataset);
+}
