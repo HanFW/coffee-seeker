@@ -458,6 +458,7 @@ function updateBarChart(d) {
                     .data(dataset);
         
     title.exit()
+            .remove();
     
     title.enter()
         .append("text")        
@@ -549,9 +550,11 @@ function updateBarChart(d) {
     svg.select('.y.axis')
         .call(y_axis);
 
-
+    svg.select(".ytxt").remove();
+    svg.select(".xtxt").remove();
 
     svg.append("text")
+        .attr("class","ytxt")
         .attr("transform","rotate(-90)")
         .attr("y", 0 - margin.left + 10)
         .attr("x", 0 - (h/2))
@@ -562,6 +565,7 @@ function updateBarChart(d) {
         .text("Coffee Owners");
 
     svg.append("text")
+        .attr("class","xtxt")
         .attr("y", h + 10)
         .attr("x", w)
         .attr("dx","1em")
