@@ -203,6 +203,7 @@ d3.csv("coffee.csv", function(data) {
             })
             .on("click", function(d){
                 updateBarChart(d);
+                window.scrollBy(0, 700);
             });
 
         var sliderAcidity = d3

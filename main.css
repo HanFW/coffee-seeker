@@ -78,6 +78,9 @@ h1{
     font-family: fantasy;
 }
 
+.instructions{
+    font-family: fantasy;
+}
 .map{
     display: block;
     margin: auto;
