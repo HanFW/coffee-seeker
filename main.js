@@ -42,15 +42,27 @@ var zoom = d3.zoom()
 // create SVG element
 var mapSvg = d3.select("body")
                .append("svg")
+               .attr("class", "map")
                .attr("width", mapW)
                .attr("height", mapH);
+mapSvg.append("rect")
+               .attr("x", 0)
+               .attr("y", 0)
+               .attr("height", mapH)
+               .attr("width", mapW)
+               .style("stroke", "black")
+               .style("fill", "none")
+               .style("stroke-width", 1);
+
 
 var g_map = mapSvg.append("g");
 
 var svg = d3.select("body")
                 .append("svg")
-                .attr("width", w + margin.left + margin.right)
+                .attr("width", w + margin.left + margin.right+ 100)
                 .attr("height", h + margin.top + margin.bottom)
+                .attr("class", "bars")
+                .attr("id", "daBars")
                 .append("g")
                 .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 var yScale = d3.scaleBand()
@@ -146,7 +158,7 @@ d3.csv("coffee.csv", function(data) {
                 	//If value is undefined…
                 	return "#ccc";
                 }
-             });
+             })
 
         // add legend
         var legend = d3.legendColor()
@@ -453,7 +465,7 @@ function updateBarChart(d) {
         .attr("y", 0)
         .attr("text-anchor","middle")
         .style("font-family","Lucida Calligraphy")
-        .style("font-size","16px")
+        .style("font-size","22px")
         .merge(title)
         .text("Owners in " + country)
 
