@@ -429,11 +429,11 @@ function updateBarChart(d) {
     dataset.forEach(function(d) {
         d.Balance = +d.Balance;
     });
-    /*
+    
     dataset.sort(function(a,b){
         return +a.Balance - +b.Balance
     })
-    */
+    
 
     var t = d3.transition()
                 .duration(500);
@@ -442,6 +442,20 @@ function updateBarChart(d) {
     xScale.domain([d3.min(dataset, function(d){ return d.Balance;})-0.3,d3.max(dataset, function(d){ return d.Balance;})+0.3])
     yScale.domain(dataset.map(function(d) { return d.Owner; }))
     
+    var title = svg.selectAll("text")
+                    .data(dataset);
+        
+    title.exit()
+    
+    title.enter()
+        .append("text")        
+        .attr("x", (w/2))
+        .attr("y", 0)
+        .attr("text-anchor","middle")
+        .style("font-family","Lucida Calligraphy")
+        .style("font-size","16px")
+        .merge(title)
+        .text("Owners in " + country)
 
     svg.append("g")
         .attr("class","x axis")
@@ -485,8 +499,8 @@ function updateBarChart(d) {
                     .style("top", yPosition + "px")
                     .select("#value")
                     .html(
-                        "Country: " + d.Country + "<br/>"
-                        + "Region: " + d.Region + "<br/>"
+                        //"Country: " + d.Country + "<br/>"
+                         "Region: " + d.Region + "<br/>"
                         + "Producer: " + d.Producer + "<br/>"
                         + "Owner: " + d.Owner + "<br/>"
                         + "mean altitude: " + d.altitude_mean_meters + "<br/>"
